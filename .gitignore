@@ -1,0 +1,5 @@
+.env
+ptcenter.log
+__pycache__/
+/tmp/ptcenter_outputs/
+.vscode/

@@ -1,0 +1,20 @@
+# ptCenter - Python Dependencies
+
+# Core dependencies
+colorama>=0.4.6
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# AI Model - Google Gemin
+google-genai>=0.1.0
+
+
+# Optional: Security Tools
+sublist3r>=1.0             # Subdomain enumeration
+
+# Optional: Advanced features
+# shodan>=1.31.0           # Shodan API (requires API key)
+# python-nmap>=0.7.1       # Python nmap wrapper
+# scapy>=2.5.0             # Packet manipulation
+# beautifulsoup4>=4.12.0   # Web scraping
+# lxml>=4.9.0              # XML/HTML parser
