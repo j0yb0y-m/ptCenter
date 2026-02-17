@@ -26,7 +26,7 @@ Before running ptCenter, ensure you have the following tools installed on your L
 
 1. **Clone the repository:**
 ```bash
-   git clone [https://github.com/yourusername/ptCenter.git](https://github.com/j0yb0y-m/ptCenter.git)
+   git clone https://github.com/j0yb0y-m/ptCenter.git
    
    cd ptCenter
 
