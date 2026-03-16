@@ -8,18 +8,6 @@ import shutil
 import subprocess
 import requests
 import re
-<<<<<<< HEAD
-from pathlib import Path
-from datetime import datetime
-from typing import Optional, Dict, Any, List
-from colorama import Fore, Back, Style, init
-from dotenv import load_dotenv
-
-# Initialize colorama
-init(autoreset=True)
-
-# Configure logging
-=======
 import base64
 from pathlib import Path
 from datetime import datetime
@@ -40,7 +28,6 @@ load_dotenv()
 init(autoreset=True)
 
 # Configure logging (single configuration — no duplicate import)
->>>>>>> 876a6f8 (Finally I updated it)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -53,18 +40,6 @@ logger = logging.getLogger(__name__)
 
 
 class Colors:
-<<<<<<< HEAD
-    """Color scheme for the application"""
-    HEADER = f"{Fore.CYAN}{Style.BRIGHT}"
-    SUCCESS = f"{Fore.GREEN}{Style.BRIGHT}"
-    WARNING = f"{Fore.YELLOW}{Style.BRIGHT}"
-    ERROR = f"{Fore.RED}{Style.BRIGHT}"
-    INFO = f"{Fore.BLUE}{Style.BRIGHT}"
-    MENU = f"{Fore.MAGENTA}{Style.BRIGHT}"
-    PROMPT = f"{Fore.WHITE}{Style.BRIGHT}"
-    RESET = Style.RESET_ALL
-    SEPARATOR = f"{Fore.GREEN}{Style.BRIGHT}{'=' * 75}{Style.RESET_ALL}"
-=======
     """Color scheme for the application."""
     HEADER      = f"{Fore.CYAN}{Style.BRIGHT}"
     SUCCESS     = f"{Fore.GREEN}{Style.BRIGHT}"
@@ -75,19 +50,10 @@ class Colors:
     PROMPT      = f"{Fore.WHITE}{Style.BRIGHT}"
     RESET       = Style.RESET_ALL
     SEPARATOR   = f"{Fore.GREEN}{Style.BRIGHT}{'=' * 75}{Style.RESET_ALL}"
->>>>>>> 876a6f8 (Finally I updated it)
     SUBSEPARATOR = f"{Fore.CYAN}{Style.DIM}{'-' * 75}{Style.RESET_ALL}"
 
 
 # ============================================================================
-<<<<<<< HEAD
-# AI MODEL - GOOGLE GEMINI ONLY
-# ============================================================================
-
-class GeminiModel:
-    """Google Gemini AI Model - Free Tier"""
-    
-=======
 # AI MODELS
 # ============================================================================
 
@@ -108,7 +74,6 @@ class GeminiModel(BaseAIModel):
     name = "gemini"
     display_name = "Google Gemini (gemini-2.0-flash)"
 
->>>>>>> 876a6f8 (Finally I updated it)
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.client = None
@@ -121,23 +86,13 @@ class GeminiModel(BaseAIModel):
             logger.info("Gemini AI client initialized successfully")
         except Exception as e:
             logger.error(f"Gemini initialization failed: {e}")
-<<<<<<< HEAD
-    
-    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
-        """Generate response from Gemini"""
-=======
 
     def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
->>>>>>> 876a6f8 (Finally I updated it)
         if not self.client:
             return None
         try:
             response = self.client.models.generate_content(
-<<<<<<< HEAD
-                model="gemini-3-flash-preview",
-=======
                 model="gemini-2.0-flash",
->>>>>>> 876a6f8 (Finally I updated it)
                 contents=prompt,
                 config=self.types.GenerateContentConfig(
                     system_instruction=system_instruction,
@@ -148,49 +103,6 @@ class GeminiModel(BaseAIModel):
         except Exception as e:
             logger.error(f"Gemini generation error: {e}")
             return None
-<<<<<<< HEAD
-    
-    def is_available(self) -> bool:
-        """Check if Gemini is available"""
-        return self.client is not None
-
-
-# ============================================================================
-# AI MANAGER - SIMPLIFIED FOR GEMINI ONLY
-# ============================================================================
-
-class AIManager:
-    """Manages Gemini AI model"""
-    
-    def __init__(self):
-        self.model: Optional[GeminiModel] = None
-        self.load_model()
-    
-    def load_model(self):
-        """Load Gemini AI model from environment"""
-        load_dotenv()
-        
-        gemini_key = os.getenv("GEMINI_API_KEY")
-        if gemini_key:
-            self.model = GeminiModel(gemini_key)
-            if self.model.is_available():
-                logger.info("Gemini AI model loaded successfully")
-            else:
-                self.model = None
-                logger.warning("Gemini API key found but initialization failed")
-        else:
-            logger.warning("GEMINI_API_KEY not found in environment")
-    
-    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
-        """Generate response using Gemini"""
-        if not self.model:
-            return None
-        return self.model.generate(prompt, system_instruction)
-    
-    def is_available(self) -> bool:
-        """Check if Gemini is available"""
-        return self.model is not None and self.model.is_available()
-=======
 
     def is_available(self) -> bool:
         return self.client is not None
@@ -398,7 +310,6 @@ class AIManager:
 
     def is_available(self) -> bool:
         return self.active_model is not None and self.active_model.is_available()
->>>>>>> 876a6f8 (Finally I updated it)
 
 
 # ============================================================================
@@ -409,34 +320,6 @@ class PTCenter:
     """Main penetration testing center class"""
     
     def __init__(self):
-<<<<<<< HEAD
-        """Initialize the PTCenter application"""
-        self.output_dir = Path("/tmp/ptcenter_outputs")
-        self.output_dir.mkdir(exist_ok=True)
-        self.ai_manager = AIManager()
-        self.config = self.load_config()
-        
-    def load_config(self) -> Dict[str, Any]:
-        """Load or create configuration file"""
-        config_file = Path.home() / ".ptcenter_config.json"
-        default_config = {
-            "output_directory": str(self.output_dir),
-            "timeout": 300,
-            "auto_ai_analysis": True,
-            "save_logs": True
-        }
-        
-        if config_file.exists():
-            try:
-                with open(config_file, 'r') as f:
-                    return json.load(f)
-            except:
-                return default_config
-        else:
-            with open(config_file, 'w') as f:
-                json.dump(default_config, f, indent=4)
-            return default_config
-=======
         """Initialize the PTCenter application."""
         # Respect OUTPUT_DIR env var if set
         output_dir_env = os.getenv("OUTPUT_DIR", "")
@@ -483,26 +366,11 @@ class PTCenter:
                 json.dump(data, f, indent=4)
         except Exception as e:
             logger.warning(f"Could not write config: {e}")
->>>>>>> 876a6f8 (Finally I updated it)
     
     def check_tool_installed(self, tool_name: str) -> bool:
         """Check if a required tool is installed"""
         return shutil.which(tool_name) is not None
     
-<<<<<<< HEAD
-    def run_command(self, command: str, output_file: Optional[str] = None, 
-                    timeout: int = 300) -> tuple[bool, str]:
-        """
-        Execute a shell command safely
-        
-        Args:
-            command: Command to execute
-            output_file: Optional file to save output
-            timeout: Command timeout in seconds
-            
-        Returns:
-            Tuple of (success, output/error_message)
-=======
     def run_command(self, command: str, output_file: Optional[str] = None,
                     timeout: int = 300) -> Tuple[bool, str]:
         """
@@ -515,7 +383,6 @@ class PTCenter:
 
         Returns:
             (success, output_or_error_message)
->>>>>>> 876a6f8 (Finally I updated it)
         """
         try:
             print(f"{Colors.INFO}▶ Executing: {command}")
@@ -557,23 +424,6 @@ class PTCenter:
     
     def analyze_with_ai(self, scan_result: str, scan_type: str) -> Optional[str]:
         """
-<<<<<<< HEAD
-        Analyze scan results using Gemini AI
-        
-        Args:
-            scan_result: The scan output to analyze
-            scan_type: Type of scan performed
-            
-        Returns:
-            AI analysis or None if AI is unavailable
-        """
-        if not self.ai_manager.is_available():
-            print(f"{Colors.WARNING}⚠ AI analysis unavailable (GEMINI_API_KEY not configured)")
-            return None
-            
-        try:
-            print(f"{Colors.INFO}🤖 Analyzing results with Gemini AI...")
-=======
         Analyze scan results using the currently active AI model.
 
         Args:
@@ -589,7 +439,6 @@ class PTCenter:
             
         try:
             print(f"{Colors.INFO}🤖 Analyzing results with {self.ai_manager.active_model_name()}...")
->>>>>>> 876a6f8 (Finally I updated it)
             
             prompt = f"""Analyze this {scan_type} scan result and provide:
 1. Executive Summary (2-3 sentences)
@@ -947,15 +796,6 @@ Highlight critical issues and provide practical remediation steps."""
                     f.write(f"\n=== {record_type} Records ===\n{result}\n")
                     print(result)
         
-<<<<<<< HEAD
-        # Try zone transfer
-        print(f"\n{Colors.INFO}▶ Attempting zone transfer...")
-        command = f"dig axfr @{domain} {domain}"
-        success, result = self.run_command(command)
-        if success and "Transfer failed" not in result:
-            with open(output_file, 'a') as f:
-                f.write(f"\n=== Zone Transfer ===\n{result}\n")
-=======
         # Attempt zone transfer against each NS record
         print(f"\n{Colors.INFO}▶ Attempting zone transfer (AXFR) against each NS...")
         # First collect NS records so we query the right authoritative servers
@@ -975,7 +815,6 @@ Highlight critical issues and provide practical remediation steps."""
                     print(f"{Colors.WARNING}  Zone transfer refused by {ns}{Colors.RESET}")
         else:
             print(f"{Colors.WARNING}  No NS records found; skipping zone transfer.{Colors.RESET}")
->>>>>>> 876a6f8 (Finally I updated it)
         
         print(f"\n{Colors.SUCCESS}✓ Results saved to: {output_file}{Colors.RESET}")
     
@@ -1046,33 +885,6 @@ Highlight critical issues and provide practical remediation steps."""
                 print(f"{Colors.ERROR}✗ Invalid option")
     
     def email_intelligence(self):
-<<<<<<< HEAD
-        """Gather intelligence on email/username"""
-        print(f"\n{Colors.HEADER}📧 Email/Username Intelligence{Colors.RESET}")
-        query = input(f"{Colors.PROMPT}[+] Enter email/username: {Colors.RESET}").strip()
-        
-        if not query:
-            print(f"{Colors.ERROR}✗ Input cannot be empty")
-            return
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = self.output_dir / f"osint_email_{timestamp}.txt"
-        
-        with open(output_file, 'w') as f:
-            f.write(f"Email/Username OSINT Report\n")
-            f.write(f"Target: {query}\n")
-            f.write(f"Date: {datetime.now()}\n")
-            f.write("=" * 75 + "\n\n")
-            
-            # Check if it's an email
-            if '@' in query:
-                email_parts = query.split('@')
-                f.write(f"Email Components:\n")
-                f.write(f"  Username: {email_parts[0]}\n")
-                f.write(f"  Domain: {email_parts[1]}\n\n")
-                
-                # Check email format validity
-=======
         """Gather intelligence on an email address or username."""
         print(f"\n{Colors.HEADER}📧 Email/Username Intelligence{Colors.RESET}")
         query = input(f"{Colors.PROMPT}[+] Enter email/username: {Colors.RESET}").strip()
@@ -1097,20 +909,11 @@ Highlight critical issues and provide practical remediation steps."""
                 f.write(f"  Username : {parts[0]}\n")
                 f.write(f"  Domain   : {parts[1]}\n\n")
 
->>>>>>> 876a6f8 (Finally I updated it)
                 email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
                 if re.match(email_regex, query):
                     f.write("✓ Valid email format\n\n")
                 else:
                     f.write("✗ Invalid email format\n\n")
-<<<<<<< HEAD
-            
-            # Check for leaked credentials using AI
-            if self.ai_manager.is_available():
-                print(f"{Colors.INFO}🤖 Analyzing with AI...")
-                prompt = f"""Provide OSINT intelligence about this identifier: {query}
-                
-=======
 
                 # ── Holehe: check which platforms the email is registered on ─
                 if self.check_tool_installed("holehe"):
@@ -1172,7 +975,6 @@ Highlight critical issues and provide practical remediation steps."""
                 print(f"{Colors.INFO}🤖 Analyzing with AI...")
                 prompt = f"""Provide OSINT intelligence guidance for this identifier: {query}
 
->>>>>>> 876a6f8 (Finally I updated it)
 Include:
 1. Possible sources to check for public information
 2. Common platforms where this identifier might be found
@@ -1181,31 +983,13 @@ Include:
 5. Legal and ethical considerations
 
 Keep it practical and actionable."""
-<<<<<<< HEAD
-                
-                analysis = self.ai_manager.generate(prompt, 
-                    "You are an OSINT expert. Provide practical, ethical guidance.")
-                
-=======
                 analysis = self.ai_manager.generate(
                     prompt, "You are an OSINT expert. Provide practical, ethical guidance."
                 )
->>>>>>> 876a6f8 (Finally I updated it)
                 if analysis:
                     f.write("=== AI OSINT Analysis ===\n")
                     f.write(analysis + "\n\n")
                     print(f"\n{Colors.INFO}{analysis}{Colors.RESET}")
-<<<<<<< HEAD
-        
-        print(f"\n{Colors.SUCCESS}✓ OSINT report saved to: {output_file}{Colors.RESET}")
-        
-        # Suggest tools
-        print(f"\n{Colors.INFO}Recommended Tools:")
-        print("  - Sherlock: python3 sherlock username")
-        print("  - Holehe: holehe email@example.com")
-        print("  - Have I Been Pwned: https://haveibeenpwned.com/")
-        print("  - Hunter.io: https://hunter.io/")
-=======
 
         print(f"\n{Colors.SUCCESS}✓ OSINT report saved to: {output_file}{Colors.RESET}")
         print(f"\n{Colors.INFO}Recommended Tools:")
@@ -1213,7 +997,6 @@ Keep it practical and actionable."""
         print("  - Holehe    : holehe <email>")
         print("  - HaveIBeenPwned : https://haveibeenpwned.com/")
         print("  - Hunter.io : https://hunter.io/")
->>>>>>> 876a6f8 (Finally I updated it)
     
     def domain_intelligence(self):
         """Gather intelligence on domain/IP"""
@@ -1260,58 +1043,6 @@ Keep it practical and actionable."""
         print(f"\n{Colors.SUCCESS}✓ Intelligence report saved to: {output_file}{Colors.RESET}")
     
     def phone_lookup(self):
-<<<<<<< HEAD
-        """Phone number OSINT"""
-        print(f"\n{Colors.HEADER}📱 Phone Number Lookup{Colors.RESET}")
-        phone = input(f"{Colors.PROMPT}[+] Enter phone number (with country code): {Colors.RESET}").strip()
-        
-        if not phone:
-            print(f"{Colors.ERROR}✗ Phone number cannot be empty")
-            return
-        
-        print(f"\n{Colors.INFO}Phone Number Analysis:")
-        print(f"  Number: {phone}")
-        
-        # Basic validation
-        if phone.startswith('+'):
-            print(f"  {Colors.SUCCESS}✓ International format detected")
-        else:
-            print(f"  {Colors.WARNING}⚠ Consider using international format (+country_code)")
-        
-        print(f"\n{Colors.INFO}Recommended Resources:")
-        print("  - TrueCaller: https://www.truecaller.com/")
-        print("  - Phone Validator: Various online services")
-        print("  - Country Code Lookup: https://countrycode.org/")
-    
-    def social_media_search(self):
-        """Social media OSINT"""
-        print(f"\n{Colors.HEADER}🔍 Social Media Search{Colors.RESET}")
-        username = input(f"{Colors.PROMPT}[+] Enter username: {Colors.RESET}").strip()
-        
-        if not username:
-            print(f"{Colors.ERROR}✗ Username cannot be empty")
-            return
-        
-        platforms = [
-            ("Twitter/X", f"https://twitter.com/{username}"),
-            ("Instagram", f"https://instagram.com/{username}"),
-            ("GitHub", f"https://github.com/{username}"),
-            ("LinkedIn", f"https://linkedin.com/in/{username}"),
-            ("Facebook", f"https://facebook.com/{username}"),
-            ("Reddit", f"https://reddit.com/user/{username}"),
-            ("TikTok", f"https://tiktok.com/@{username}"),
-            ("YouTube", f"https://youtube.com/@{username}"),
-        ]
-        
-        print(f"\n{Colors.INFO}Profile URLs to check:")
-        for platform, url in platforms:
-            print(f"  {Colors.MENU}►{Colors.RESET} {platform}: {url}")
-        
-        print(f"\n{Colors.INFO}Recommended Tools:")
-        print("  - Sherlock: https://github.com/sherlock-project/sherlock")
-        print("  - Maigret: https://github.com/soxoj/maigret")
-        print("  - Social Analyzer: https://github.com/qeeqbox/social-analyzer")
-=======
         """Phone number OSINT."""
         print(f"\n{Colors.HEADER}📱 Phone Number Lookup{Colors.RESET}")
         phone = input(f"{Colors.PROMPT}[+] Enter phone number (with country code, e.g. +9647701234567): {Colors.RESET}").strip()
@@ -1440,7 +1171,6 @@ Keep it practical and actionable."""
         print("  - Sherlock        : https://github.com/sherlock-project/sherlock")
         print("  - Maigret         : https://github.com/soxoj/maigret")
         print("  - Social Analyzer : https://github.com/qeeqbox/social-analyzer")
->>>>>>> 876a6f8 (Finally I updated it)
     
     def metadata_extraction(self):
         """Extract metadata from files"""
@@ -1692,15 +1422,9 @@ Format for terminal display with clear sections."""
             print(f"{Colors.HEADER}{'=' * 75}{Colors.RESET}")
             
             # Base64 encode option
-<<<<<<< HEAD
-            encode = input(f"\n{Colors.PROMPT}[?] Base64 encode payload? (y/n): {Colors.RESET}").strip().lower()
-            if encode == 'y':
-                import base64
-=======
             encoded: Optional[str] = None
             encode = input(f"\n{Colors.PROMPT}[?] Base64 encode payload? (y/n): {Colors.RESET}").strip().lower()
             if encode == 'y':
->>>>>>> 876a6f8 (Finally I updated it)
                 encoded = base64.b64encode(payload.encode()).decode()
                 print(f"\n{Colors.SUCCESS}Base64 Encoded:")
                 print(f"{Colors.INFO}{encoded}{Colors.RESET}")
@@ -1715,11 +1439,7 @@ Format for terminal display with clear sections."""
                 f.write(f"LPORT: {lport}\n")
                 f.write(f"Generated: {datetime.now()}\n\n")
                 f.write(f"Payload:\n{payload}\n")
-<<<<<<< HEAD
-                if encode == 'y':
-=======
                 if encoded:
->>>>>>> 876a6f8 (Finally I updated it)
                     f.write(f"\nBase64 Encoded:\n{encoded}\n")
             
             print(f"\n{Colors.SUCCESS}✓ Saved to: {output_file}{Colors.RESET}")
@@ -2537,95 +2257,6 @@ if __name__ == "__main__":
             print(f"\n{Colors.SEPARATOR}")
             print(f"{Colors.HEADER}           ⚙️  SETTINGS{Colors.RESET}")
             print(Colors.SEPARATOR)
-<<<<<<< HEAD
-            
-            ai_status = "Enabled" if self.ai_manager.is_available() else "Disabled"
-            
-            print(f"""
-{Colors.INFO}Current Configuration:{Colors.RESET}
-  Output Directory: {self.output_dir}
-  AI Status: {ai_status}
-  AI Model: Google Gemini (gemini-3-flash-preview)
-  Auto AI Analysis: {self.config.get('auto_ai_analysis', True)}
-
-{Colors.MENU}1{Colors.RESET} - Toggle Auto AI Analysis
-{Colors.MENU}2{Colors.RESET} - View Gemini API Setup Help
-{Colors.MENU}3{Colors.RESET} - Clear Output Directory
-{Colors.MENU}4{Colors.RESET} - View Logs
-{Colors.MENU}5{Colors.RESET} - Back to Main Menu
-""")
-            print(Colors.SUBSEPARATOR)
-            
-            choice = input(f"{Colors.PROMPT}[+] Select option: {Colors.RESET}").strip()
-            
-            if choice == "1":
-                self.toggle_auto_analysis()
-            elif choice == "2":
-                self.show_api_help()
-            elif choice == "3":
-                self.clear_output_directory()
-            elif choice == "4":
-                self.view_logs()
-            elif choice == "5":
-                break
-            else:
-                print(f"{Colors.ERROR}✗ Invalid option")
-    
-    def show_api_help(self):
-        """Show Gemini API configuration help"""
-        print(f"\n{Colors.HEADER}{'=' * 75}")
-        print(f"{Colors.HEADER}GEMINI API CONFIGURATION GUIDE{Colors.RESET}")
-        print(f"{Colors.HEADER}{'=' * 75}{Colors.RESET}\n")
-        
-        print(f"{Colors.SUCCESS}🎉 GOOGLE GEMINI - 100% FREE!{Colors.RESET}\n")
-        
-        print(f"{Colors.INFO}Gemini offers a generous FREE tier:{Colors.RESET}")
-        print(f"  ✅ 15 requests per minute")
-        print(f"  ✅ 1 million tokens per day")
-        print(f"  ✅ No credit card required")
-        print(f"  ✅ No expiration\n")
-        
-        print(f"{Colors.HEADER}Setup Steps:{Colors.RESET}\n")
-        print(f"{Colors.MENU}1.{Colors.RESET} Visit: {Colors.INFO}https://makersuite.google.com/app/apikey{Colors.RESET}")
-        print(f"{Colors.MENU}2.{Colors.RESET} Sign in with your Google account")
-        print(f"{Colors.MENU}3.{Colors.RESET} Click 'Create API Key'")
-        print(f"{Colors.MENU}4.{Colors.RESET} Copy your API key")
-        print(f"{Colors.MENU}5.{Colors.RESET} Create a .env file in the application directory:")
-        print(f"\n{Colors.SUBSEPARATOR}")
-        print(f"   GEMINI_API_KEY=your_api_key_here")
-        print(f"{Colors.SUBSEPARATOR}\n")
-        print(f"{Colors.MENU}6.{Colors.RESET} Restart ptCenter\n")
-        
-        print(f"{Colors.INFO}Example .env file:{Colors.RESET}")
-        print(f"{Colors.SUBSEPARATOR}")
-        print("# Google Gemini API Key (FREE)")
-        print("GEMINI_API_KEY=AIzaSyC...")
-        print(f"{Colors.SUBSEPARATOR}\n")
-        
-        print(f"{Colors.SUCCESS}💡 Pro Tips:{Colors.RESET}")
-        print(f"  • Keep your API key private")
-        print(f"  • Add .env to .gitignore if using version control")
-        print(f"  • The free tier is very generous for pentesting use")
-        print(f"  • No payment info required at any point\n")
-        
-        print(f"{Colors.WARNING}⚠ Security Note:{Colors.RESET}")
-        print(f"  Never share your API key or commit it to public repositories!\n")
-    
-    def toggle_auto_analysis(self):
-        """Toggle automatic AI analysis"""
-        current = self.config.get("auto_ai_analysis", True)
-        self.config["auto_ai_analysis"] = not current
-        
-        status = "enabled" if self.config["auto_ai_analysis"] else "disabled"
-        print(f"{Colors.SUCCESS}✓ Auto AI analysis {status}{Colors.RESET}")
-    
-    def clear_output_directory(self):
-        """Clear output directory"""
-        confirm = input(f"{Colors.WARNING}⚠ Clear all files in {self.output_dir}? (yes/no): {Colors.RESET}").strip().lower()
-        
-        if confirm == "yes":
-            import shutil
-=======
 
             ai_status = "Enabled" if self.ai_manager.is_available() else "Disabled"
             loaded = list(self.ai_manager.get_available_models().keys())
@@ -2771,24 +2402,10 @@ if __name__ == "__main__":
             f"{Colors.WARNING}⚠ Clear all files in {self.output_dir}? (yes/no): {Colors.RESET}"
         ).strip().lower()
         if confirm == "yes":
->>>>>>> 876a6f8 (Finally I updated it)
             shutil.rmtree(self.output_dir)
             self.output_dir.mkdir()
             print(f"{Colors.SUCCESS}✓ Output directory cleared{Colors.RESET}")
         else:
-<<<<<<< HEAD
-            print(f"{Colors.INFO}Operation cancelled")
-    
-    def view_logs(self):
-        """View application logs"""
-        log_file = Path("ptcenter.log")
-        if log_file.exists():
-            print(f"\n{Colors.INFO}Last 50 log entries:{Colors.RESET}\n")
-            command = f"tail -n 50 {log_file}"
-            self.run_command(command)
-        else:
-            print(f"{Colors.WARNING}⚠ No log file found{Colors.RESET}")
-=======
             print(f"{Colors.INFO}Operation cancelled{Colors.RESET}")
     
     def view_logs(self):
@@ -2806,7 +2423,6 @@ if __name__ == "__main__":
             print("".join(last_50))
         except Exception as e:
             print(f"{Colors.ERROR}✗ Could not read log file: {e}{Colors.RESET}")
->>>>>>> 876a6f8 (Finally I updated it)
     
     # ========================================================================
     # MAIN INTERFACE
@@ -2814,8 +2430,6 @@ if __name__ == "__main__":
     
     def display_banner(self):
         """Display application banner"""
-<<<<<<< HEAD
-=======
         ai_status_str = (
             f"✓ {self.ai_manager.active_model_name()}"
             if self.ai_manager.is_available()
@@ -2824,7 +2438,6 @@ if __name__ == "__main__":
         model_count = len(self.ai_manager.get_available_models())
         model_count_str = f"({model_count} model{'s' if model_count != 1 else ''} loaded)" if model_count else ""
 
->>>>>>> 876a6f8 (Finally I updated it)
         banner = f"""
 {Colors.HEADER}{'=' * 75}
  ██████╗ ████████╗    ██████╗███████╗███╗   ██╗████████╗███████╗██████╗ 
@@ -2834,16 +2447,6 @@ if __name__ == "__main__":
  ██║        ██║      ╚██████╗███████╗██║ ╚████║   ██║   ███████╗██║  ██║
  ╚═╝        ╚═╝       ╚═════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 {'=' * 75}
-<<<<<<< HEAD
-    {Colors.SUCCESS}🔒 Advanced Penetration Testing with Gemini AI 🔒{Colors.RESET}
-{Colors.HEADER}{'=' * 75}
-
-{Colors.INFO}Developer:{Colors.RESET} Mahdi (@j0yb0y-m) | Enhanced by Claude
-{Colors.INFO}Version:{Colors.RESET} 3.0 - Gemini Edition
-{Colors.INFO}AI Model:{Colors.RESET} Google Gemini (gemini-3-flash-preview)
-{Colors.INFO}Output:{Colors.RESET} {self.output_dir}
-{Colors.INFO}AI Status:{Colors.RESET} {'✓ Gemini Enabled' if self.ai_manager.is_available() else '✗ Disabled (Set GEMINI_API_KEY)'}
-=======
     {Colors.SUCCESS}🔒 Advanced Penetration Testing 🔒{Colors.RESET}
 {Colors.HEADER}{'=' * 75}
 
@@ -2851,7 +2454,6 @@ if __name__ == "__main__":
 {Colors.INFO}Version:{Colors.RESET}   2.0 - Multi-Model Edition
 {Colors.INFO}AI Status:{Colors.RESET} {ai_status_str} {model_count_str}
 {Colors.INFO}Output:{Colors.RESET}    {self.output_dir}
->>>>>>> 876a6f8 (Finally I updated it)
 
 {Colors.HEADER}{'=' * 75}{Colors.RESET}
 """
@@ -2881,17 +2483,12 @@ if __name__ == "__main__":
             
             # Show quick tip
             if not self.ai_manager.is_available():
-<<<<<<< HEAD
-                print(f"{Colors.WARNING}💡 Tip: Configure AI API keys for enhanced analysis")
-                print(f"{Colors.INFO}   See Settings > API Configuration Help{Colors.RESET}\n")
-=======
                 print(f"{Colors.WARNING}💡 Tip: Configure an AI API key for enhanced analysis")
                 print(f"{Colors.INFO}   See Settings ► View API Setup Help for all supported models{Colors.RESET}\n")
             else:
                 loaded = list(self.ai_manager.get_available_models().keys())
                 if len(loaded) > 1:
                     print(f"{Colors.INFO}💡 {len(loaded)} models loaded. Switch anytime in Settings ► Change Active AI Model{Colors.RESET}\n")
->>>>>>> 876a6f8 (Finally I updated it)
             
             while True:
                 self.display_menu()
