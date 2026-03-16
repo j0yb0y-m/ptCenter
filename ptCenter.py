@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import requests
 import re
+<<<<<<< HEAD
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any, List
@@ -18,6 +19,28 @@ from dotenv import load_dotenv
 init(autoreset=True)
 
 # Configure logging
+=======
+import base64
+from pathlib import Path
+from datetime import datetime
+from typing import Optional, Dict, Any, List, Tuple
+from colorama import Fore, Style, init
+from dotenv import load_dotenv
+
+# ---------------------------------------------------------------------------
+# NOTE: Heavy / optional OSINT libraries (holehe, maigret, truecallerpy) are
+# imported lazily inside the functions that need them so that ptCenter starts
+# even if those packages are not installed.
+# ---------------------------------------------------------------------------
+
+# Load environment variables once at module level
+load_dotenv()
+
+# Initialize colorama
+init(autoreset=True)
+
+# Configure logging (single configuration — no duplicate import)
+>>>>>>> 876a6f8 (Finally I updated it)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -30,6 +53,7 @@ logger = logging.getLogger(__name__)
 
 
 class Colors:
+<<<<<<< HEAD
     """Color scheme for the application"""
     HEADER = f"{Fore.CYAN}{Style.BRIGHT}"
     SUCCESS = f"{Fore.GREEN}{Style.BRIGHT}"
@@ -40,16 +64,51 @@ class Colors:
     PROMPT = f"{Fore.WHITE}{Style.BRIGHT}"
     RESET = Style.RESET_ALL
     SEPARATOR = f"{Fore.GREEN}{Style.BRIGHT}{'=' * 75}{Style.RESET_ALL}"
+=======
+    """Color scheme for the application."""
+    HEADER      = f"{Fore.CYAN}{Style.BRIGHT}"
+    SUCCESS     = f"{Fore.GREEN}{Style.BRIGHT}"
+    WARNING     = f"{Fore.YELLOW}{Style.BRIGHT}"
+    ERROR       = f"{Fore.RED}{Style.BRIGHT}"
+    INFO        = f"{Fore.BLUE}{Style.BRIGHT}"
+    MENU        = f"{Fore.MAGENTA}{Style.BRIGHT}"
+    PROMPT      = f"{Fore.WHITE}{Style.BRIGHT}"
+    RESET       = Style.RESET_ALL
+    SEPARATOR   = f"{Fore.GREEN}{Style.BRIGHT}{'=' * 75}{Style.RESET_ALL}"
+>>>>>>> 876a6f8 (Finally I updated it)
     SUBSEPARATOR = f"{Fore.CYAN}{Style.DIM}{'-' * 75}{Style.RESET_ALL}"
 
 
 # ============================================================================
+<<<<<<< HEAD
 # AI MODEL - GOOGLE GEMINI ONLY
 # ============================================================================
 
 class GeminiModel:
     """Google Gemini AI Model - Free Tier"""
     
+=======
+# AI MODELS
+# ============================================================================
+
+class BaseAIModel:
+    """Base class for all AI models"""
+    name: str = "base"
+    display_name: str = "Base Model"
+
+    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
+        raise NotImplementedError
+
+    def is_available(self) -> bool:
+        raise NotImplementedError
+
+
+class GeminiModel(BaseAIModel):
+    """Google Gemini AI Model - Free Tier"""
+    name = "gemini"
+    display_name = "Google Gemini (gemini-2.0-flash)"
+
+>>>>>>> 876a6f8 (Finally I updated it)
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.client = None
@@ -62,14 +121,23 @@ class GeminiModel:
             logger.info("Gemini AI client initialized successfully")
         except Exception as e:
             logger.error(f"Gemini initialization failed: {e}")
+<<<<<<< HEAD
     
     def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
         """Generate response from Gemini"""
+=======
+
+    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
+>>>>>>> 876a6f8 (Finally I updated it)
         if not self.client:
             return None
         try:
             response = self.client.models.generate_content(
+<<<<<<< HEAD
                 model="gemini-3-flash-preview",
+=======
+                model="gemini-2.0-flash",
+>>>>>>> 876a6f8 (Finally I updated it)
                 contents=prompt,
                 config=self.types.GenerateContentConfig(
                     system_instruction=system_instruction,
@@ -80,6 +148,7 @@ class GeminiModel:
         except Exception as e:
             logger.error(f"Gemini generation error: {e}")
             return None
+<<<<<<< HEAD
     
     def is_available(self) -> bool:
         """Check if Gemini is available"""
@@ -121,6 +190,215 @@ class AIManager:
     def is_available(self) -> bool:
         """Check if Gemini is available"""
         return self.model is not None and self.model.is_available()
+=======
+
+    def is_available(self) -> bool:
+        return self.client is not None
+
+
+class OpenAIModel(BaseAIModel):
+    """OpenAI GPT Model"""
+    name = "openai"
+    display_name = "OpenAI GPT-4o"
+
+    def __init__(self, api_key: str, model: str = "gpt-4o"):
+        self.api_key = api_key
+        self.model_name = model
+        self.client = None
+        try:
+            import openai
+            self.client = openai.OpenAI(api_key=api_key)
+            logger.info("OpenAI client initialized successfully")
+        except Exception as e:
+            logger.error(f"OpenAI initialization failed: {e}")
+
+    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
+        if not self.client:
+            return None
+        try:
+            messages = []
+            if system_instruction:
+                messages.append({"role": "system", "content": system_instruction})
+            messages.append({"role": "user", "content": prompt})
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                temperature=0.3,
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            logger.error(f"OpenAI generation error: {e}")
+            return None
+
+    def is_available(self) -> bool:
+        return self.client is not None
+
+
+class ClaudeModel(BaseAIModel):
+    """Anthropic Claude Model"""
+    name = "claude"
+    display_name = "Anthropic Claude (claude-3-5-haiku-latest)"
+
+    def __init__(self, api_key: str, model: str = "claude-3-5-haiku-latest"):
+        self.api_key = api_key
+        self.model_name = model
+        self.client = None
+        try:
+            import anthropic
+            self.client = anthropic.Anthropic(api_key=api_key)
+            logger.info("Anthropic Claude client initialized successfully")
+        except Exception as e:
+            logger.error(f"Claude initialization failed: {e}")
+
+    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
+        if not self.client:
+            return None
+        try:
+            kwargs = {
+                "model": self.model_name,
+                "max_tokens": 2048,
+                "messages": [{"role": "user", "content": prompt}],
+            }
+            if system_instruction:
+                kwargs["system"] = system_instruction
+            response = self.client.messages.create(**kwargs)
+            return response.content[0].text
+        except Exception as e:
+            logger.error(f"Claude generation error: {e}")
+            return None
+
+    def is_available(self) -> bool:
+        return self.client is not None
+
+
+class OllamaModel(BaseAIModel):
+    """Ollama Local AI Model (runs 100% offline)"""
+    name = "ollama"
+
+    def __init__(self, host: str = "http://localhost:11434", model: str = "llama3"):
+        self.host = host.rstrip("/")
+        self.model_name = model
+        self.display_name = f"Ollama Local ({model})"
+        self._available = self._check_connection()
+
+    def _check_connection(self) -> bool:
+        try:
+            r = requests.get(f"{self.host}/api/tags", timeout=3)
+            return r.status_code == 200
+        except Exception:
+            return False
+
+    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
+        if not self._available:
+            return None
+        try:
+            payload = {
+                "model": self.model_name,
+                "prompt": prompt,
+                "system": system_instruction,
+                "stream": False,
+                "options": {"temperature": 0.3},
+            }
+            r = requests.post(f"{self.host}/api/generate", json=payload, timeout=120)
+            r.raise_for_status()
+            return r.json().get("response")
+        except Exception as e:
+            logger.error(f"Ollama generation error: {e}")
+            return None
+
+    def is_available(self) -> bool:
+        return self._available
+
+
+# ============================================================================
+# AI MANAGER - MULTI-MODEL SUPPORT
+# ============================================================================
+
+class AIManager:
+    """Manages multiple AI models and tracks the active one"""
+
+    MODEL_LABELS = {
+        "gemini": "Google Gemini",
+        "openai": "OpenAI GPT-4o",
+        "claude": "Anthropic Claude",
+        "ollama": "Ollama Local",
+    }
+
+    def __init__(self):
+        self.models: Dict[str, BaseAIModel] = {}
+        self.active_model: Optional[BaseAIModel] = None
+        self.load_models()
+
+    def load_models(self):
+        """Load all AI models whose keys are present in the environment."""
+        # load_dotenv() is called at module level; env vars are already available
+
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        if gemini_key:
+            m = GeminiModel(gemini_key)
+            if m.is_available():
+                self.models["gemini"] = m
+                logger.info("Gemini loaded")
+
+        openai_key = os.getenv("OPENAI_API_KEY")
+        if openai_key:
+            openai_model = os.getenv("OPENAI_MODEL", "gpt-4o")
+            m = OpenAIModel(openai_key, model=openai_model)
+            if m.is_available():
+                self.models["openai"] = m
+                logger.info("OpenAI loaded")
+
+        claude_key = os.getenv("ANTHROPIC_API_KEY")
+        if claude_key:
+            claude_model = os.getenv("CLAUDE_MODEL", "claude-3-5-haiku-latest")
+            m = ClaudeModel(claude_key, model=claude_model)
+            if m.is_available():
+                self.models["claude"] = m
+                logger.info("Claude loaded")
+
+        ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        ollama_model = os.getenv("OLLAMA_MODEL", "llama3")
+        m = OllamaModel(host=ollama_host, model=ollama_model)
+        if m.is_available():
+            self.models["ollama"] = m
+            logger.info("Ollama loaded")
+
+        # Auto-select: prefer saved preference, then first available
+        saved = os.getenv("ACTIVE_AI_MODEL")
+        if saved and saved in self.models:
+            self.active_model = self.models[saved]
+        elif self.models:
+            self.active_model = next(iter(self.models.values()))
+
+        if self.active_model:
+            logger.info(f"Active AI model: {self.active_model.display_name}")
+        else:
+            logger.warning("No AI models available")
+
+    def get_available_models(self) -> Dict[str, BaseAIModel]:
+        return self.models
+
+    def select_model(self, key: str) -> bool:
+        """Switch active model by key. Returns True on success."""
+        if key in self.models:
+            self.active_model = self.models[key]
+            logger.info(f"Switched active AI model to: {self.active_model.display_name}")
+            return True
+        return False
+
+    def active_model_name(self) -> str:
+        if self.active_model:
+            return self.active_model.display_name
+        return "None (no model configured)"
+
+    def generate(self, prompt: str, system_instruction: str = "") -> Optional[str]:
+        if not self.active_model:
+            return None
+        return self.active_model.generate(prompt, system_instruction)
+
+    def is_available(self) -> bool:
+        return self.active_model is not None and self.active_model.is_available()
+>>>>>>> 876a6f8 (Finally I updated it)
 
 
 # ============================================================================
@@ -131,6 +409,7 @@ class PTCenter:
     """Main penetration testing center class"""
     
     def __init__(self):
+<<<<<<< HEAD
         """Initialize the PTCenter application"""
         self.output_dir = Path("/tmp/ptcenter_outputs")
         self.output_dir.mkdir(exist_ok=True)
@@ -157,11 +436,60 @@ class PTCenter:
             with open(config_file, 'w') as f:
                 json.dump(default_config, f, indent=4)
             return default_config
+=======
+        """Initialize the PTCenter application."""
+        # Respect OUTPUT_DIR env var if set
+        output_dir_env = os.getenv("OUTPUT_DIR", "")
+        self.output_dir = Path(output_dir_env) if output_dir_env else Path("/tmp/ptcenter_outputs")
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.ai_manager = AIManager()
+        self.config = self.load_config()
+        # Respect COMMAND_TIMEOUT env var if set
+        try:
+            self.default_timeout = int(os.getenv("COMMAND_TIMEOUT", str(self.config.get("timeout", 300))))
+        except ValueError:
+            self.default_timeout = 300
+        
+    def load_config(self) -> Dict[str, Any]:
+        """Load or create the configuration file."""
+        config_file = Path.home() / ".ptcenter_config.json"
+        default_config: Dict[str, Any] = {
+            "output_directory": str(self.output_dir),
+            "timeout": 300,
+            "auto_ai_analysis": True,
+            "save_logs": True,
+        }
+        if config_file.exists():
+            try:
+                with open(config_file, 'r') as f:
+                    loaded = json.load(f)
+                    # Merge so new keys from default_config are always present
+                    return {**default_config, **loaded}
+            except Exception:
+                return default_config
+        else:
+            self._write_config(config_file, default_config)
+            return default_config
+
+    def save_config(self) -> None:
+        """Persist the current in-memory config to disk."""
+        config_file = Path.home() / ".ptcenter_config.json"
+        self._write_config(config_file, self.config)
+
+    @staticmethod
+    def _write_config(path: Path, data: Dict[str, Any]) -> None:
+        try:
+            with open(path, 'w') as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            logger.warning(f"Could not write config: {e}")
+>>>>>>> 876a6f8 (Finally I updated it)
     
     def check_tool_installed(self, tool_name: str) -> bool:
         """Check if a required tool is installed"""
         return shutil.which(tool_name) is not None
     
+<<<<<<< HEAD
     def run_command(self, command: str, output_file: Optional[str] = None, 
                     timeout: int = 300) -> tuple[bool, str]:
         """
@@ -174,6 +502,20 @@ class PTCenter:
             
         Returns:
             Tuple of (success, output/error_message)
+=======
+    def run_command(self, command: str, output_file: Optional[str] = None,
+                    timeout: int = 300) -> Tuple[bool, str]:
+        """
+        Execute a shell command safely.
+
+        Args:
+            command:     Command to execute.
+            output_file: Optional file path to save stdout output.
+            timeout:     Command timeout in seconds.
+
+        Returns:
+            (success, output_or_error_message)
+>>>>>>> 876a6f8 (Finally I updated it)
         """
         try:
             print(f"{Colors.INFO}▶ Executing: {command}")
@@ -215,6 +557,7 @@ class PTCenter:
     
     def analyze_with_ai(self, scan_result: str, scan_type: str) -> Optional[str]:
         """
+<<<<<<< HEAD
         Analyze scan results using Gemini AI
         
         Args:
@@ -230,6 +573,23 @@ class PTCenter:
             
         try:
             print(f"{Colors.INFO}🤖 Analyzing results with Gemini AI...")
+=======
+        Analyze scan results using the currently active AI model.
+
+        Args:
+            scan_result: The scan output to analyze.
+            scan_type:   Type of scan performed (e.g. "Nmap", "Nikto Web").
+
+        Returns:
+            AI analysis string, or None if the AI is unavailable.
+        """
+        if not self.ai_manager.is_available():
+            print(f"{Colors.WARNING}⚠ AI analysis unavailable — configure an API key and restart")
+            return None
+            
+        try:
+            print(f"{Colors.INFO}🤖 Analyzing results with {self.ai_manager.active_model_name()}...")
+>>>>>>> 876a6f8 (Finally I updated it)
             
             prompt = f"""Analyze this {scan_type} scan result and provide:
 1. Executive Summary (2-3 sentences)
@@ -587,6 +947,7 @@ Highlight critical issues and provide practical remediation steps."""
                     f.write(f"\n=== {record_type} Records ===\n{result}\n")
                     print(result)
         
+<<<<<<< HEAD
         # Try zone transfer
         print(f"\n{Colors.INFO}▶ Attempting zone transfer...")
         command = f"dig axfr @{domain} {domain}"
@@ -594,6 +955,27 @@ Highlight critical issues and provide practical remediation steps."""
         if success and "Transfer failed" not in result:
             with open(output_file, 'a') as f:
                 f.write(f"\n=== Zone Transfer ===\n{result}\n")
+=======
+        # Attempt zone transfer against each NS record
+        print(f"\n{Colors.INFO}▶ Attempting zone transfer (AXFR) against each NS...")
+        # First collect NS records so we query the right authoritative servers
+        ns_cmd = f"dig {domain} NS +short"
+        ns_ok, ns_out = self.run_command(ns_cmd)
+        ns_servers = [s.rstrip('.') for s in ns_out.splitlines() if s.strip()] if ns_ok else []
+
+        if ns_servers:
+            for ns in ns_servers:
+                axfr_cmd = f"dig axfr @{ns} {domain}"
+                ok, result = self.run_command(axfr_cmd)
+                if ok and "Transfer failed" not in result and "connection refused" not in result.lower():
+                    with open(output_file, 'a') as f:
+                        f.write(f"\n=== Zone Transfer from {ns} ===\n{result}\n")
+                    print(f"{Colors.SUCCESS}✓ Zone transfer succeeded from {ns}{Colors.RESET}")
+                else:
+                    print(f"{Colors.WARNING}  Zone transfer refused by {ns}{Colors.RESET}")
+        else:
+            print(f"{Colors.WARNING}  No NS records found; skipping zone transfer.{Colors.RESET}")
+>>>>>>> 876a6f8 (Finally I updated it)
         
         print(f"\n{Colors.SUCCESS}✓ Results saved to: {output_file}{Colors.RESET}")
     
@@ -664,6 +1046,7 @@ Highlight critical issues and provide practical remediation steps."""
                 print(f"{Colors.ERROR}✗ Invalid option")
     
     def email_intelligence(self):
+<<<<<<< HEAD
         """Gather intelligence on email/username"""
         print(f"\n{Colors.HEADER}📧 Email/Username Intelligence{Colors.RESET}")
         query = input(f"{Colors.PROMPT}[+] Enter email/username: {Colors.RESET}").strip()
@@ -689,17 +1072,107 @@ Highlight critical issues and provide practical remediation steps."""
                 f.write(f"  Domain: {email_parts[1]}\n\n")
                 
                 # Check email format validity
+=======
+        """Gather intelligence on an email address or username."""
+        print(f"\n{Colors.HEADER}📧 Email/Username Intelligence{Colors.RESET}")
+        query = input(f"{Colors.PROMPT}[+] Enter email/username: {Colors.RESET}").strip()
+
+        if not query:
+            print(f"{Colors.ERROR}✗ Input cannot be empty")
+            return
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = self.output_dir / f"osint_email_{timestamp}.txt"
+
+        with open(output_file, 'w') as f:
+            f.write("Email/Username OSINT Report\n")
+            f.write(f"Target: {query}\n")
+            f.write(f"Date: {datetime.now()}\n")
+            f.write("=" * 75 + "\n\n")
+
+            # ── Email-specific analysis ──────────────────────────────────────
+            if '@' in query:
+                parts = query.split('@', 1)
+                f.write("Email Components:\n")
+                f.write(f"  Username : {parts[0]}\n")
+                f.write(f"  Domain   : {parts[1]}\n\n")
+
+>>>>>>> 876a6f8 (Finally I updated it)
                 email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
                 if re.match(email_regex, query):
                     f.write("✓ Valid email format\n\n")
                 else:
                     f.write("✗ Invalid email format\n\n")
+<<<<<<< HEAD
             
             # Check for leaked credentials using AI
             if self.ai_manager.is_available():
                 print(f"{Colors.INFO}🤖 Analyzing with AI...")
                 prompt = f"""Provide OSINT intelligence about this identifier: {query}
                 
+=======
+
+                # ── Holehe: check which platforms the email is registered on ─
+                if self.check_tool_installed("holehe"):
+                    # Prefer CLI — it handles trio / async internally and is stable
+                    print(f"{Colors.INFO}▶ Running holehe to check registered accounts...")
+                    holehe_out_file = str(output_file) + ".holehe"
+                    cmd = f"holehe {query} 2>/dev/null"
+                    ok, holehe_result = self.run_command(cmd, timeout=120)
+                    if ok and holehe_result:
+                        f.write("=== Holehe Account Check ===\n")
+                        f.write(holehe_result + "\n\n")
+                        print(holehe_result)
+                    else:
+                        print(f"{Colors.WARNING}⚠ Holehe returned no results or timed out{Colors.RESET}")
+                else:
+                    print(f"{Colors.WARNING}⚠ holehe not installed — skipping account check")
+                    print(f"{Colors.INFO}   Install: pip install holehe{Colors.RESET}")
+                    # Programmatic fallback using holehe's Python API
+                    try:
+                        import trio
+                        import httpx as _httpx
+                        from holehe.core import get_functions
+
+                        async def _run_holehe(email: str) -> List[Dict]:
+                            """Run all holehe modules against *email* and return results."""
+                            results: List[Dict] = []
+                            functions = get_functions()
+                            async with _httpx.AsyncClient() as client:
+                                for func in functions:
+                                    try:
+                                        out: List[Dict] = []
+                                        await func(email, client, out)
+                                        results.extend(out)
+                                    except Exception:
+                                        pass
+                            return results
+
+                        print(f"{Colors.INFO}▶ Running holehe Python API...")
+                        holehe_results = trio.run(_run_holehe, query)
+                        found = [r for r in holehe_results if r.get("exists")]
+                        if found:
+                            f.write("=== Holehe Account Check (API) ===\n")
+                            for item in found:
+                                line = f"  ✓ {item['name']}"
+                                if item.get("emailrecovery"):
+                                    line += f"  (recovery: {item['emailrecovery']})"
+                                f.write(line + "\n")
+                                print(f"{Colors.SUCCESS}{line}{Colors.RESET}")
+                            f.write("\n")
+                        else:
+                            print(f"{Colors.WARNING}⚠ No accounts found via holehe API{Colors.RESET}")
+                    except ImportError:
+                        pass  # holehe not installed — already warned above
+                    except Exception as holehe_err:
+                        logger.warning(f"Holehe API error: {holehe_err}")
+
+            # ── AI OSINT Analysis ────────────────────────────────────────────
+            if self.ai_manager.is_available():
+                print(f"{Colors.INFO}🤖 Analyzing with AI...")
+                prompt = f"""Provide OSINT intelligence guidance for this identifier: {query}
+
+>>>>>>> 876a6f8 (Finally I updated it)
 Include:
 1. Possible sources to check for public information
 2. Common platforms where this identifier might be found
@@ -708,14 +1181,21 @@ Include:
 5. Legal and ethical considerations
 
 Keep it practical and actionable."""
+<<<<<<< HEAD
                 
                 analysis = self.ai_manager.generate(prompt, 
                     "You are an OSINT expert. Provide practical, ethical guidance.")
                 
+=======
+                analysis = self.ai_manager.generate(
+                    prompt, "You are an OSINT expert. Provide practical, ethical guidance."
+                )
+>>>>>>> 876a6f8 (Finally I updated it)
                 if analysis:
                     f.write("=== AI OSINT Analysis ===\n")
                     f.write(analysis + "\n\n")
                     print(f"\n{Colors.INFO}{analysis}{Colors.RESET}")
+<<<<<<< HEAD
         
         print(f"\n{Colors.SUCCESS}✓ OSINT report saved to: {output_file}{Colors.RESET}")
         
@@ -725,6 +1205,15 @@ Keep it practical and actionable."""
         print("  - Holehe: holehe email@example.com")
         print("  - Have I Been Pwned: https://haveibeenpwned.com/")
         print("  - Hunter.io: https://hunter.io/")
+=======
+
+        print(f"\n{Colors.SUCCESS}✓ OSINT report saved to: {output_file}{Colors.RESET}")
+        print(f"\n{Colors.INFO}Recommended Tools:")
+        print("  - Sherlock  : python3 sherlock <username>")
+        print("  - Holehe    : holehe <email>")
+        print("  - HaveIBeenPwned : https://haveibeenpwned.com/")
+        print("  - Hunter.io : https://hunter.io/")
+>>>>>>> 876a6f8 (Finally I updated it)
     
     def domain_intelligence(self):
         """Gather intelligence on domain/IP"""
@@ -771,6 +1260,7 @@ Keep it practical and actionable."""
         print(f"\n{Colors.SUCCESS}✓ Intelligence report saved to: {output_file}{Colors.RESET}")
     
     def phone_lookup(self):
+<<<<<<< HEAD
         """Phone number OSINT"""
         print(f"\n{Colors.HEADER}📱 Phone Number Lookup{Colors.RESET}")
         phone = input(f"{Colors.PROMPT}[+] Enter phone number (with country code): {Colors.RESET}").strip()
@@ -821,6 +1311,136 @@ Keep it practical and actionable."""
         print("  - Sherlock: https://github.com/sherlock-project/sherlock")
         print("  - Maigret: https://github.com/soxoj/maigret")
         print("  - Social Analyzer: https://github.com/qeeqbox/social-analyzer")
+=======
+        """Phone number OSINT."""
+        print(f"\n{Colors.HEADER}📱 Phone Number Lookup{Colors.RESET}")
+        phone = input(f"{Colors.PROMPT}[+] Enter phone number (with country code, e.g. +9647701234567): {Colors.RESET}").strip()
+
+        if not phone:
+            print(f"{Colors.ERROR}✗ Phone number cannot be empty")
+            return
+
+        print(f"\n{Colors.INFO}Phone Number: {phone}")
+
+        # ── TrueCaller CLI (if available) ────────────────────────────────────
+        if self.check_tool_installed("truecallerpy"):
+            print(f"{Colors.INFO}▶ Attempting TrueCaller lookup via CLI...")
+            try:
+                # Login is interactive and idempotent — only blocks first time
+                subprocess.run(["truecallerpy", "login"], check=False, timeout=30)
+                subprocess.run(["truecallerpy", "-i", phone], check=False, timeout=30)
+            except subprocess.TimeoutExpired:
+                print(f"{Colors.WARNING}⚠ TrueCaller CLI timed out{Colors.RESET}")
+            except FileNotFoundError:
+                print(f"{Colors.WARNING}⚠ truecallerpy CLI not found{Colors.RESET}")
+            except Exception as e:
+                logger.warning(f"TrueCaller CLI error: {e}")
+        else:
+            # ── TrueCaller Python API (programmatic fallback) ────────────────
+            installation_id = os.getenv("TRUECALLER_INSTALLATION_ID", "")
+            if not installation_id:
+                print(f"{Colors.WARNING}⚠ TrueCaller not available.")
+                print(f"{Colors.INFO}  Options:")
+                print(f"  1. Install the CLI : pip install truecallerpy  (then: truecallerpy login)")
+                print(f"  2. Set TRUECALLER_INSTALLATION_ID= in your .env for the Python API{Colors.RESET}")
+            else:
+                try:
+                    import asyncio
+                    from truecallerpy import search_phonenumber
+
+                    async def _tc_search(number: str, country: str, inst_id: str):
+                        return await search_phonenumber(number, country, inst_id)
+
+                    # Derive country code from the E.164 prefix heuristic
+                    country_code = "IQ"  # default; override via env
+                    if phone.startswith("+1"):
+                        country_code = "US"
+                    elif phone.startswith("+44"):
+                        country_code = "GB"
+
+                    print(f"{Colors.INFO}▶ Querying TrueCaller API...")
+                    results = asyncio.run(_tc_search(phone, country_code, installation_id))
+
+                    if results and results.get("data"):
+                        data = results["data"]
+                        print(f"{Colors.SUCCESS}✓ Phone number found in TrueCaller database")
+                        print(f"  Name    : {data.get('name', 'N/A')}")
+                        print(f"  Carrier : {data.get('carrier', 'N/A')}")
+                        print(f"  Location: {data.get('location', 'N/A')}{Colors.RESET}")
+                    else:
+                        print(f"{Colors.WARNING}⚠ Phone number not found in TrueCaller database{Colors.RESET}")
+
+                except ImportError:
+                    print(f"{Colors.WARNING}⚠ truecallerpy not installed. Run: pip install truecallerpy{Colors.RESET}")
+                except Exception as e:
+                    print(f"{Colors.ERROR}✗ TrueCaller API error: {e}{Colors.RESET}")
+                    logger.error(f"TrueCaller API error: {e}")
+
+        print(f"\n{Colors.INFO}Recommended Resources:")
+        print("  - TrueCaller        : https://www.truecaller.com/")
+        print("  - Phone Validator   : https://phonevalidator.com/")
+        print("  - Country Code List : https://countrycode.org/")
+    
+    def social_media_search(self):
+        """Social media OSINT — username search across platforms."""
+        print(f"\n{Colors.HEADER}🔍 Social Media Search{Colors.RESET}")
+        username = input(f"{Colors.PROMPT}[+] Enter username: {Colors.RESET}").strip()
+
+        if not username:
+            print(f"{Colors.ERROR}✗ Username cannot be empty")
+            return
+
+        platforms = [
+            ("Twitter/X", f"https://twitter.com/{username}"),
+            ("Instagram",  f"https://instagram.com/{username}"),
+            ("GitHub",     f"https://github.com/{username}"),
+            ("LinkedIn",   f"https://linkedin.com/in/{username}"),
+            ("Facebook",   f"https://facebook.com/{username}"),
+            ("Reddit",     f"https://reddit.com/user/{username}"),
+            ("TikTok",     f"https://tiktok.com/@{username}"),
+            ("YouTube",    f"https://youtube.com/@{username}"),
+        ]
+
+        print(f"\n{Colors.INFO}Profile URLs to check:")
+        for platform, url in platforms:
+            print(f"  {Colors.MENU}►{Colors.RESET} {platform}: {url}")
+
+        # ── Sherlock (preferred — widely available) ──────────────────────────
+        if self.check_tool_installed("sherlock"):
+            print(f"\n{Colors.INFO}▶ Running Sherlock username search...")
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_file = self.output_dir / f"sherlock_{username}_{timestamp}.txt"
+            cmd = f"sherlock {username} --output {output_file} --print-found"
+            ok, result = self.run_command(cmd, timeout=180)
+            if ok:
+                print(f"{Colors.SUCCESS}✓ Sherlock results saved to: {output_file}{Colors.RESET}")
+        else:
+            print(f"{Colors.WARNING}⚠ Sherlock not installed. Install: pip install sherlock-project{Colors.RESET}")
+
+        # ── Maigret (CLI only — internal Python API is unstable across versions)
+        if self.check_tool_installed("maigret"):
+            print(f"\n{Colors.INFO}▶ Running Maigret username search...")
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_dir = self.output_dir / f"maigret_{username}_{timestamp}"
+            output_dir.mkdir(exist_ok=True)
+            # --no-recursion keeps runtime predictable; -n 100 limits site count
+            cmd = (
+                f"maigret {username} --no-recursion -n 100 "
+                f"--folderoutput {output_dir} --print-found 2>/dev/null"
+            )
+            ok, result = self.run_command(cmd, timeout=180)
+            if ok:
+                print(f"{Colors.SUCCESS}✓ Maigret results saved to: {output_dir}{Colors.RESET}")
+            else:
+                print(f"{Colors.WARNING}⚠ Maigret search failed or timed out{Colors.RESET}")
+        else:
+            print(f"{Colors.WARNING}⚠ Maigret not installed. Install: pip install maigret{Colors.RESET}")
+
+        print(f"\n{Colors.INFO}Recommended Tools:")
+        print("  - Sherlock        : https://github.com/sherlock-project/sherlock")
+        print("  - Maigret         : https://github.com/soxoj/maigret")
+        print("  - Social Analyzer : https://github.com/qeeqbox/social-analyzer")
+>>>>>>> 876a6f8 (Finally I updated it)
     
     def metadata_extraction(self):
         """Extract metadata from files"""
@@ -1072,9 +1692,15 @@ Format for terminal display with clear sections."""
             print(f"{Colors.HEADER}{'=' * 75}{Colors.RESET}")
             
             # Base64 encode option
+<<<<<<< HEAD
             encode = input(f"\n{Colors.PROMPT}[?] Base64 encode payload? (y/n): {Colors.RESET}").strip().lower()
             if encode == 'y':
                 import base64
+=======
+            encoded: Optional[str] = None
+            encode = input(f"\n{Colors.PROMPT}[?] Base64 encode payload? (y/n): {Colors.RESET}").strip().lower()
+            if encode == 'y':
+>>>>>>> 876a6f8 (Finally I updated it)
                 encoded = base64.b64encode(payload.encode()).decode()
                 print(f"\n{Colors.SUCCESS}Base64 Encoded:")
                 print(f"{Colors.INFO}{encoded}{Colors.RESET}")
@@ -1089,7 +1715,11 @@ Format for terminal display with clear sections."""
                 f.write(f"LPORT: {lport}\n")
                 f.write(f"Generated: {datetime.now()}\n\n")
                 f.write(f"Payload:\n{payload}\n")
+<<<<<<< HEAD
                 if encode == 'y':
+=======
+                if encoded:
+>>>>>>> 876a6f8 (Finally I updated it)
                     f.write(f"\nBase64 Encoded:\n{encoded}\n")
             
             print(f"\n{Colors.SUCCESS}✓ Saved to: {output_file}{Colors.RESET}")
@@ -1907,6 +2537,7 @@ if __name__ == "__main__":
             print(f"\n{Colors.SEPARATOR}")
             print(f"{Colors.HEADER}           ⚙️  SETTINGS{Colors.RESET}")
             print(Colors.SEPARATOR)
+<<<<<<< HEAD
             
             ai_status = "Enabled" if self.ai_manager.is_available() else "Disabled"
             
@@ -1994,10 +2625,158 @@ if __name__ == "__main__":
         
         if confirm == "yes":
             import shutil
+=======
+
+            ai_status = "Enabled" if self.ai_manager.is_available() else "Disabled"
+            loaded = list(self.ai_manager.get_available_models().keys())
+            loaded_str = ", ".join(loaded) if loaded else "None"
+
+            print(f"""
+{Colors.INFO}Current Configuration:{Colors.RESET}
+  Output Directory  : {self.output_dir}
+  AI Status         : {ai_status}
+  Active AI Model   : {self.ai_manager.active_model_name()}
+  Available Models  : {loaded_str}
+  Auto AI Analysis  : {self.config.get('auto_ai_analysis', True)}
+
+{Colors.MENU}1{Colors.RESET} - Change Active AI Model
+{Colors.MENU}2{Colors.RESET} - Toggle Auto AI Analysis
+{Colors.MENU}3{Colors.RESET} - View API Setup Help
+{Colors.MENU}4{Colors.RESET} - Clear Output Directory
+{Colors.MENU}5{Colors.RESET} - View Logs
+{Colors.MENU}6{Colors.RESET} - Back to Main Menu
+""")
+            print(Colors.SUBSEPARATOR)
+
+            choice = input(f"{Colors.PROMPT}[+] Select option: {Colors.RESET}").strip()
+
+            if choice == "1":
+                self.select_ai_model()
+            elif choice == "2":
+                self.toggle_auto_analysis()
+            elif choice == "3":
+                self.show_api_help()
+            elif choice == "4":
+                self.clear_output_directory()
+            elif choice == "5":
+                self.view_logs()
+            elif choice == "6":
+                break
+            else:
+                print(f"{Colors.ERROR}✗ Invalid option")
+
+    def select_ai_model(self):
+        """Interactively choose which AI model to use"""
+        available = self.ai_manager.get_available_models()
+
+        if not available:
+            print(f"\n{Colors.WARNING}⚠ No AI models are currently loaded.")
+            print(f"{Colors.INFO}Add API keys to your .env file and restart ptCenter.")
+            print(f"{Colors.INFO}See 'View API Setup Help' for instructions.{Colors.RESET}")
+            return
+
+        print(f"\n{Colors.HEADER}{'=' * 75}")
+        print(f"{Colors.HEADER}  🤖  SELECT ACTIVE AI MODEL{Colors.RESET}")
+        print(f"{Colors.HEADER}{'=' * 75}{Colors.RESET}\n")
+
+        keys = list(available.keys())
+        for idx, key in enumerate(keys, 1):
+            model = available[key]
+            active_marker = f"  {Colors.SUCCESS}◄ ACTIVE{Colors.RESET}" if model is self.ai_manager.active_model else ""
+            print(f"  {Colors.MENU}{idx}{Colors.RESET} - {model.display_name}{active_marker}")
+
+        print(f"\n  {Colors.MENU}0{Colors.RESET} - Cancel\n")
+        print(Colors.SUBSEPARATOR)
+
+        raw = input(f"{Colors.PROMPT}[+] Select model [0-{len(keys)}]: {Colors.RESET}").strip()
+
+        if raw == "0":
+            return
+
+        try:
+            idx = int(raw) - 1
+            if 0 <= idx < len(keys):
+                key = keys[idx]
+                if self.ai_manager.select_model(key):
+                    print(f"\n{Colors.SUCCESS}✓ Active model switched to: {self.ai_manager.active_model_name()}{Colors.RESET}")
+                    print(f"{Colors.INFO}  Tip: Set ACTIVE_AI_MODEL={key} in your .env to make this permanent.{Colors.RESET}")
+            else:
+                print(f"{Colors.ERROR}✗ Invalid selection{Colors.RESET}")
+        except ValueError:
+            print(f"{Colors.ERROR}✗ Please enter a number{Colors.RESET}")
+
+    def show_api_help(self):
+        """Show API configuration help for all supported models"""
+        print(f"\n{Colors.HEADER}{'=' * 75}")
+        print(f"{Colors.HEADER}  🔑  AI MODEL SETUP GUIDE{Colors.RESET}")
+        print(f"{Colors.HEADER}{'=' * 75}{Colors.RESET}\n")
+
+        # Gemini
+        print(f"{Colors.SUCCESS}① Google Gemini  — 100% FREE{Colors.RESET}")
+        print(f"  Key env var : GEMINI_API_KEY")
+        print(f"  Get key     : https://aistudio.google.com/app/apikey")
+        print(f"  Free tier   : 15 req/min · 1 M tokens/day · no credit card\n")
+
+        # OpenAI
+        print(f"{Colors.INFO}② OpenAI GPT-4o  — Paid (generous free trial credits){Colors.RESET}")
+        print(f"  Key env var : OPENAI_API_KEY")
+        print(f"  Model env   : OPENAI_MODEL  (default: gpt-4o)")
+        print(f"  Get key     : https://platform.openai.com/api-keys\n")
+
+        # Claude
+        print(f"{Colors.MENU}③ Anthropic Claude — Paid (free trial credits available){Colors.RESET}")
+        print(f"  Key env var : ANTHROPIC_API_KEY")
+        print(f"  Model env   : CLAUDE_MODEL  (default: claude-3-5-haiku-latest)")
+        print(f"  Get key     : https://console.anthropic.com/\n")
+
+        # Ollama
+        print(f"{Colors.WARNING}④ Ollama Local  — 100% FREE & Offline{Colors.RESET}")
+        print(f"  No API key needed — runs models locally on your machine")
+        print(f"  Host env    : OLLAMA_HOST   (default: http://localhost:11434)")
+        print(f"  Model env   : OLLAMA_MODEL  (default: llama3)")
+        print(f"  Install     : https://ollama.com/download")
+        print(f"  Pull model  : ollama pull llama3\n")
+
+        print(f"{Colors.HEADER}Example .env file:{Colors.RESET}")
+        print(f"{Colors.SUBSEPARATOR}")
+        print("# Uncomment and fill in whichever models you want to use:\n")
+        print("GEMINI_API_KEY=AIzaSyC...")
+        print("# OPENAI_API_KEY=sk-...")
+        print("# OPENAI_MODEL=gpt-4o")
+        print("# ANTHROPIC_API_KEY=sk-ant-...")
+        print("# CLAUDE_MODEL=claude-3-5-haiku-latest")
+        print("# OLLAMA_HOST=http://localhost:11434")
+        print("# OLLAMA_MODEL=llama3")
+        print("# ACTIVE_AI_MODEL=gemini   # gemini | openai | claude | ollama")
+        print(f"{Colors.SUBSEPARATOR}\n")
+
+        print(f"{Colors.SUCCESS}💡 Tips:{Colors.RESET}")
+        print(f"  • You can load multiple models and switch between them in Settings")
+        print(f"  • Set ACTIVE_AI_MODEL= in .env to choose your default at startup")
+        print(f"  • Never commit your .env file to version control")
+        print(f"  • Ollama is the best choice for air-gapped / private engagements\n")
+
+        print(f"{Colors.WARNING}⚠ Security: Never share your API keys!{Colors.RESET}\n")
+    
+    def toggle_auto_analysis(self):
+        """Toggle automatic AI analysis and persist the change."""
+        self.config["auto_ai_analysis"] = not self.config.get("auto_ai_analysis", True)
+        status = "enabled" if self.config["auto_ai_analysis"] else "disabled"
+        self.save_config()
+        print(f"{Colors.SUCCESS}✓ Auto AI analysis {status} (saved){Colors.RESET}")
+    
+    def clear_output_directory(self):
+        """Clear all files in the output directory."""
+        confirm = input(
+            f"{Colors.WARNING}⚠ Clear all files in {self.output_dir}? (yes/no): {Colors.RESET}"
+        ).strip().lower()
+        if confirm == "yes":
+>>>>>>> 876a6f8 (Finally I updated it)
             shutil.rmtree(self.output_dir)
             self.output_dir.mkdir()
             print(f"{Colors.SUCCESS}✓ Output directory cleared{Colors.RESET}")
         else:
+<<<<<<< HEAD
             print(f"{Colors.INFO}Operation cancelled")
     
     def view_logs(self):
@@ -2009,6 +2788,25 @@ if __name__ == "__main__":
             self.run_command(command)
         else:
             print(f"{Colors.WARNING}⚠ No log file found{Colors.RESET}")
+=======
+            print(f"{Colors.INFO}Operation cancelled{Colors.RESET}")
+    
+    def view_logs(self):
+        """View the last 50 lines of the application log file."""
+        log_file = Path("ptcenter.log")
+        if not log_file.exists():
+            print(f"{Colors.WARNING}⚠ No log file found{Colors.RESET}")
+            return
+
+        try:
+            with open(log_file, 'r', errors='replace') as f:
+                lines = f.readlines()
+            last_50 = lines[-50:]
+            print(f"\n{Colors.INFO}Last {len(last_50)} log entries:{Colors.RESET}\n")
+            print("".join(last_50))
+        except Exception as e:
+            print(f"{Colors.ERROR}✗ Could not read log file: {e}{Colors.RESET}")
+>>>>>>> 876a6f8 (Finally I updated it)
     
     # ========================================================================
     # MAIN INTERFACE
@@ -2016,6 +2814,17 @@ if __name__ == "__main__":
     
     def display_banner(self):
         """Display application banner"""
+<<<<<<< HEAD
+=======
+        ai_status_str = (
+            f"✓ {self.ai_manager.active_model_name()}"
+            if self.ai_manager.is_available()
+            else "✗ Disabled — add an API key to .env"
+        )
+        model_count = len(self.ai_manager.get_available_models())
+        model_count_str = f"({model_count} model{'s' if model_count != 1 else ''} loaded)" if model_count else ""
+
+>>>>>>> 876a6f8 (Finally I updated it)
         banner = f"""
 {Colors.HEADER}{'=' * 75}
  ██████╗ ████████╗    ██████╗███████╗███╗   ██╗████████╗███████╗██████╗ 
@@ -2025,6 +2834,7 @@ if __name__ == "__main__":
  ██║        ██║      ╚██████╗███████╗██║ ╚████║   ██║   ███████╗██║  ██║
  ╚═╝        ╚═╝       ╚═════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 {'=' * 75}
+<<<<<<< HEAD
     {Colors.SUCCESS}🔒 Advanced Penetration Testing with Gemini AI 🔒{Colors.RESET}
 {Colors.HEADER}{'=' * 75}
 
@@ -2033,6 +2843,15 @@ if __name__ == "__main__":
 {Colors.INFO}AI Model:{Colors.RESET} Google Gemini (gemini-3-flash-preview)
 {Colors.INFO}Output:{Colors.RESET} {self.output_dir}
 {Colors.INFO}AI Status:{Colors.RESET} {'✓ Gemini Enabled' if self.ai_manager.is_available() else '✗ Disabled (Set GEMINI_API_KEY)'}
+=======
+    {Colors.SUCCESS}🔒 Advanced Penetration Testing 🔒{Colors.RESET}
+{Colors.HEADER}{'=' * 75}
+
+{Colors.INFO}Developer:{Colors.RESET} Mahdi (@j0yb0y-m)
+{Colors.INFO}Version:{Colors.RESET}   2.0 - Multi-Model Edition
+{Colors.INFO}AI Status:{Colors.RESET} {ai_status_str} {model_count_str}
+{Colors.INFO}Output:{Colors.RESET}    {self.output_dir}
+>>>>>>> 876a6f8 (Finally I updated it)
 
 {Colors.HEADER}{'=' * 75}{Colors.RESET}
 """
@@ -2062,8 +2881,17 @@ if __name__ == "__main__":
             
             # Show quick tip
             if not self.ai_manager.is_available():
+<<<<<<< HEAD
                 print(f"{Colors.WARNING}💡 Tip: Configure AI API keys for enhanced analysis")
                 print(f"{Colors.INFO}   See Settings > API Configuration Help{Colors.RESET}\n")
+=======
+                print(f"{Colors.WARNING}💡 Tip: Configure an AI API key for enhanced analysis")
+                print(f"{Colors.INFO}   See Settings ► View API Setup Help for all supported models{Colors.RESET}\n")
+            else:
+                loaded = list(self.ai_manager.get_available_models().keys())
+                if len(loaded) > 1:
+                    print(f"{Colors.INFO}💡 {len(loaded)} models loaded. Switch anytime in Settings ► Change Active AI Model{Colors.RESET}\n")
+>>>>>>> 876a6f8 (Finally I updated it)
             
             while True:
                 self.display_menu()

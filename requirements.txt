@@ -1,4 +1,5 @@
 # ptCenter - Python Dependencies
+<<<<<<< HEAD
 
 # Core dependencies
 colorama>=0.4.6
@@ -18,3 +19,37 @@ sublist3r>=1.0             # Subdomain enumeration
 # scapy>=2.5.0             # Packet manipulation
 # beautifulsoup4>=4.12.0   # Web scraping
 # lxml>=4.9.0              # XML/HTML parser
+=======
+# Install: pip install -r requirements.txt
+
+# ── Core ─────────────────────────────────────────────────────────────────────
+colorama
+python-dotenv
+requests
+
+# ── AI Models — install whichever providers you plan to use ──────────────────
+google-genai          # Google Gemini (free tier)
+openai                # OpenAI GPT-4o (paid)
+anthropic            # Anthropic Claude (paid)
+# Ollama requires no Python package — just a running Ollama server
+# Install: https://ollama.com/download  |  pull model: ollama pull llama3
+
+# ── OSINT / Recon ────────────────────────────────────────────────────────────
+# NOTE: All OSINT libraries below are optional. ptCenter starts fine without them.
+holehe                # Email account checker (uses httpx + trio internally)
+trio                 # Async concurrency (required by holehe)
+httpx                # Async HTTP client   (required by holehe)
+maigret               # Username OSINT (used via CLI: `maigret <username>`)
+sherlock-project     # Username search     (used via CLI: `sherlock <username>`)
+truecallerpy          # Phone number lookup (optional; needs TrueCaller account)
+
+# ── Security / Scanning ──────────────────────────────────────────────────────
+python-nmap           # Python nmap wrapper
+scapy                 # Packet manipulation (DHCP/SYN flood scripts)
+beautifulsoup4       # Web scraping helpers
+lxml               # XML/HTML parser
+
+# ── Optional extras ──────────────────────────────────────────────────────────
+sublist3r             # Subdomain enumeration (also available as CLI)
+# shodan>=1.31.0             # Shodan API (requires paid API key)
+>>>>>>> 876a6f8 (Finally I updated it)
