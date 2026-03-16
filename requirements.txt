@@ -1,5 +1,4 @@
 # ptCenter - Python Dependencies
-<<<<<<< HEAD
 
 # Core dependencies
 colorama>=0.4.6
@@ -52,4 +51,3 @@ lxml               # XML/HTML parser
 # ── Optional extras ──────────────────────────────────────────────────────────
 sublist3r             # Subdomain enumeration (also available as CLI)
 # shodan>=1.31.0             # Shodan API (requires paid API key)
->>>>>>> 876a6f8 (Finally I updated it)
