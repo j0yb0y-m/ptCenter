@@ -1,0 +1,79 @@
+# Environment — NEVER commit secrets
+.env
+*.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+wheels/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+MANIFEST
+.python-version
+
+# uv / pip
+.venv/
+venv/
+env/
+ENV/
+.uv/
+uv.lock
+
+# Output & logs
+/tmp/ptcenter_outputs/
+ptcenter_outputs/
+*.log
+*.out
+ptcenter.log*
+
+# Sessions & config (user-specific data)
+~/.ptcenter_sessions/
+~/.ptcenter_config.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# mypy / ruff
+.mypy_cache/
+.ruff_cache/
+
+# Payloads & scan output generated at runtime
+*.payload
+*.pcap
+*.cap
+nmap_*.xml
+nmap_*.txt
+nikto_*.txt
+sqlmap_*.txt
+crack_*.txt

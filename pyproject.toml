@@ -1,0 +1,78 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ptcenter"
+version = "2.0.0"
+description = "Advanced Python Penetration Testing Toolkit with AI Integration"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPLv3" }
+authors = [{ name = "Mahdi (@j0yb0y-m)" }]
+keywords = ["penetration-testing", "security", "ctf", "hacking", "ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+]
+
+# Core dependencies always installed
+dependencies = [
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
+    "rich>=13.7.0",
+    "jinja2>=3.1.0",
+    "PyJWT>=2.8.0",
+    "phonenumbers>=8.13.0",
+]
+
+[project.optional-dependencies]
+# uv sync --extra ai
+ai = [
+    "google-genai>=1.0.0",
+    "openai>=1.0.0",
+    "anthropic>=0.25.0",
+]
+# uv sync --extra osint
+osint = [
+    "holehe",
+    "trio",
+    "httpx",
+    "maigret",
+    "sherlock-project",
+    "truecallerpy",
+]
+# uv sync --extra network
+network = [
+    "scapy>=2.5.0",
+]
+# uv sync --extra full  (everything)
+full = [
+    "ptcenter[ai,osint,network]",
+]
+
+[project.scripts]
+ptcenter = "ptcenter.__main__:main"
+
+# uv configuration 
+[tool.uv]
+# Default extras to install when running plain `uv sync`
+# Change to ["full"] if you want everything, or [] for core only
+default-groups = []
+
+[tool.uv.sources]
+# Override sources here if you need a private index, e.g.:
+# google-genai = { index = "https://pypi.org/simple" }
+
+# Hatchling build 
+[tool.hatch.build.targets.wheel]
+packages = ["ptcenter"]
