@@ -154,23 +154,20 @@ fi
 # uv installation
 if ! command -v uv &>/dev/null; then
     info "Installing uv…"
-    CURL_INSTALLATION = $(curl -LsSf connect-timeout 10 --max-time 40 https://astral.sh/uv/install.sh | sh)
-    exec $CURL_INSTALLATION
-    # Add to PATH for the rest of this script
-    export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-    success "uv installed"
-    if ! $CURL_INSTALLATION; then
-      warn "uv installation via curl failed — trying pip fallback…"
-      info "Installing uv via pip…"
-      python -m pip install --user uv --break-system-packages
-      export PATH="$HOME/.local/bin:$PATH"
-      success "uv installed via pip"
-    else 
-      success "uv installed via curl"
+    if curl -LsSf --connect-timeout 10 --max-time 40 https://astral.sh/uv/install.sh | sh; then
+        # Add to PATH for the rest of this script
+        export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+        success "uv installed via curl"
+    else
+        warn "uv installation via curl failed — trying pip fallback…"
+        info "Installing uv via pip…"
+        python -m pip install --user uv --break-system-packages
+        export PATH="$HOME/.local/bin:$PATH"
+        success "uv installed via pip"
     fi
-else 
+else
     success "uv already installed"
-   fi
+fi
 
 # ptCenter Python env
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

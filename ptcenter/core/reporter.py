@@ -120,7 +120,7 @@ footer{text-align:center;padding:2rem;color:#8b949e;font-size:.75rem;border-top:
     <tr>
       <td>{{ loop.index }}</td>
       <td><a href="#finding-{{ loop.index }}">{{ f.title }}</a></td>
-      <td><span class="badge {{ f.severity | lower | truncate(4, false, '') }}">{{ f.severity }}</span></td>
+      <td><span class="badge {{ severity_class_map[f.severity] }}">{{ f.severity }}</span></td>
       <td>{{ f.module }}</td>
       <td>{{ f.tool }}</td>
       <td class="meta">{{ f.timestamp[:19] }}</td>
@@ -137,7 +137,7 @@ footer{text-align:center;padding:2rem;color:#8b949e;font-size:.75rem;border-top:
 <div class="finding-card" id="finding-{{ loop.index }}">
   <h3>#{{ loop.index }} — {{ f.title }}</h3>
   <p class="meta">
-    Severity: <span class="badge {{ f.severity | lower | truncate(4, false, '') }}">{{ f.severity }}</span>
+    Severity: <span class="badge {{ severity_class_map[f.severity] }}">{{ f.severity }}</span>
     &emsp;Module: <span class="pill">{{ f.module }}</span>
     &emsp;Tool: <span class="pill">{{ f.tool }}</span>
     &emsp;Time: {{ f.timestamp[:19] }}
@@ -213,6 +213,14 @@ def generate_report(
         severity_counts[sev] = severity_counts.get(sev, 0) + 1
     severity_counts = {k: v for k, v in severity_counts.items() if v > 0}
 
+    severity_class_map = {
+        "Critical": "crit",
+        "High": "high",
+        "Medium": "med",
+        "Low": "low",
+        "Info": "info",
+    }
+
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     html = tmpl.render(
@@ -225,6 +233,7 @@ def generate_report(
         output_files=output_files,
         output_dir=str(output_dir),
         severity_counts=severity_counts,
+        severity_class_map=severity_class_map,
     )
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")

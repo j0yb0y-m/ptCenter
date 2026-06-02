@@ -259,7 +259,6 @@ def social_media_search(output_dir: Path) -> None:
 
 
 # Metadata Extraction
--
 
 def metadata_extraction(output_dir: Path) -> None:
     if not _check("exiftool"):
@@ -277,7 +276,6 @@ def metadata_extraction(output_dir: Path) -> None:
     console.print(f"[bold green]✓[/] Saved: [cyan]{out}[/]")
 
 
--
 # WHOIS Lookup
 
 def whois_lookup(output_dir: Path) -> None:
@@ -291,9 +289,7 @@ def whois_lookup(output_dir: Path) -> None:
     console.print(f"[bold green]✓[/] Saved: [cyan]{out}[/]")
 
 
--
 # Shodan Search
--
 
 def shodan_search(output_dir: Path) -> None:
     if not _check("shodan"):

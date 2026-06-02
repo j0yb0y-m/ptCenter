@@ -195,7 +195,8 @@ class AIManager:
             return None
         try:
             # Strip any accidental markdown fences
-            clean = raw.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
+            clean = raw.strip()
+            clean = clean.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
             return json.loads(clean)
         except Exception:
             return None
